@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>RTO&DA</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/feather/feather.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/typicons/typicons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/simple-line-icons/css/simple-line-icons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css') }}">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='assets/js/select.dataTables.min.css') }}">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/style.css') }}">
+    <!-- endinject -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='assets/images/favicon.png') }}">
+  </head>
+  <body class="with-welcome-text">
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+          <div class="me-3">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+              <span class="icon-menu"></span>
+            </button>
+          </div>
+          <div>
+            <a class="navbar-brand brand-logo" href="index.html">
+              <img src="{{ url_for('static', filename='assets/images/logo.svg') }}" alt="logo" />
+            </a>
+            <a class="navbar-brand brand-logo-mini" href="index.html">
+              <img src="{{ url_for('static', filename='assets/images/logo-mini.svg') }}" alt="logo" />
+            </a>
+          </div>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-top">
+          <ul class="navbar-nav">
+            <li class="nav-item fw-semibold d-none d-lg-block ms-0">
+              <h1 class="welcome-text">Good Morning, <span class="text-black fw-bold">MA College</span></h1>
+              <h3 class="welcome-sub-text">Your Traffic Summary</h3>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <form class="search-form" action="#">
+                <i class="icon-search"></i>
+                <input type="search" class="form-control" placeholder="Search Here" title="Search here">
+              </form>
+            </li>
+            <!--<li class="nav-item dropdown d-none d-lg-block user-dropdown">
+              <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                <img class="img-xs rounded-circle" src="{{ url_for('static', filename='assets/images/faces/face8.jpg') }}" alt="Profile image"> </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+                <div class="dropdown-header text-center">
+                  <img class="img-md rounded-circle" src="{{ url_for('static', filename='assets/images/faces/face8.jpg') }}" alt="Profile image">
+                  <p class="mb-1 mt-3 fw-semibold">Aakash P</p>
+                  <p class="fw-light text-muted mb-0">aakashputhussery@gmail.com</p>
+                </div>
+                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
+                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
+                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-calendar-check-outline text-primary me-2"></i> Activity</a>
+                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i> FAQ</a>
+                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+              </div>
+            </li>-->
+          </ul>
+          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+            <span class="mdi mdi-menu"></span>
+          </button>
+        </div>
+      </nav>
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+          <ul class="nav">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">
+                <i class="mdi mdi-grid-large menu-icon"></i>
+                <span class="menu-title">Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
+                <i class="menu-icon mdi mdi-chart-line"></i>
+                <span class="menu-title">Charts</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="charts">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"><a class="nav-link" href="{{ url_for('chartjs') }}">ChartJs</a></li>                
+                </ul>
+              </div>
+            </li>
+            <!--<li class="nav-item">
+              <a class="nav-link" href="{{url_for('documentation')}}">
+                <i class="menu-icon mdi mdi-file-document"></i>
+                <span class="menu-title">Documentation</span>
+              </a>
+            </li>-->
+          </ul>
+        </nav>
+        <!-- partial -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="home-tab">
+                  <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item">
+                        <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Overview</a>
+                      </li>
+                    </ul>
+                    <div>
+                      <div class="btn-wrapper">
+                        <a href="#" id= "shareButton" class="btn btn-otline-dark align-items-center"><i class="icon-share"></i> Share</a>
+                        <a href="#" id= "printButton" class="btn btn-otline-dark"><i class="icon-printer"></i> Print</a>
+                        <a href="#" class="btn btn-primary text-white me-0"><i class="icon-download"></i> Export</a>
+                        <!-- Add this modal to your HTML -->
+<div id="exportModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3>Select Export Period</h3>
+    <form id="exportForm" action="/export" method="POST">
+      <label>
+        <input type="radio" name="period" value="daily" checked> Daily
+      </label>
+      <label>
+        <input type="radio" name="period" value="monthly"> Monthly
+      </label>
+      <label>
+        <input type="radio" name="period" value="yearly"> Yearly
+      </label>
+
+      <!-- Daily Date Picker -->
+      <div id="dailySection" class="period-section">
+        <label for="dailyDate">Select Date:</label>
+        <input type="date" id="dailyDate" name="dailyDate">
+      </div>
+
+      <!-- Monthly Date Picker -->
+      <div id="monthlySection" class="period-section" style="display: none;">
+        <label for="monthlyMonth">Select Month:</label>
+        <input type="month" id="monthlyMonth" name="monthlyMonth">
+      </div>
+
+      <!-- Yearly Date Picker -->
+      <div id="yearlySection" class="period-section" style="display: none;">
+        <label for="yearlyYear">Select Year:</label>
+        <input type="number" id="yearlyYear" name="yearlyYear" min="2000" max="2100">
+      </div>
+
+      <button type="submit" class="btn btn-primary">Export</button>
+    </form>
+  </div>
+</div>
+
+<!-- Add this script to handle the modal and period selection -->
+<script>
+  // Get the modal
+  const modal = document.getElementById('exportModal');
+
+  // Get the button that opens the modal
+  const exportButton = document.querySelector('.btn-primary.text-white.me-0');
+
+  // Get the <span> element that closes the modal
+  const closeButton = document.querySelector('.close');
+
+  // When the user clicks the button, open the modal
+  exportButton.addEventListener('click', function(event) {
+    event.preventDefault();
+    modal.style.display = 'block';
+  });
+
+  // When the user clicks on <span> (x), close the modal
+  closeButton.addEventListener('click', function() {
+    modal.style.display = 'none';
+  });
+
+  // When the user clicks anywhere outside the modal, close it
+  window.addEventListener('click', function(event) {
+    if (event.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+
+  // Show/hide period-specific inputs based on selection
+  const periodInputs = document.querySelectorAll('input[name="period"]');
+  const dailySection = document.getElementById('dailySection');
+  const monthlySection = document.getElementById('monthlySection');
+  const yearlySection = document.getElementById('yearlySection');
+
+  periodInputs.forEach(input => {
+    input.addEventListener('change', function() {
+      if (this.value === 'daily') {
+        dailySection.style.display = 'block';
+        monthlySection.style.display = 'none';
+        yearlySection.style.display = 'none';
+      } else if (this.value === 'monthly') {
+        dailySection.style.display = 'none';
+        monthlySection.style.display = 'block';
+        yearlySection.style.display = 'none';
+      } else if (this.value === 'yearly') {
+        dailySection.style.display = 'none';
+        monthlySection.style.display = 'none';
+        yearlySection.style.display = 'block';
+      }
+    });
+  });
+</script>
+                        
+                      </div>
+                    </div>
+                    <script>
+                      // Add an event listener to the "Share" button
+                      document.getElementById('shareButton').addEventListener('click', function(event) {
+                        event.preventDefault(); // Prevent the default link behavior
+                    
+                        // Get the current page URL
+                        const url = window.location.href;
+                    
+                        // Copy the URL to the clipboard
+                        navigator.clipboard.writeText(url)
+                          .then(() => {
+                            alert('URL copied to clipboard: ' + url);
+                          })
+                          .catch((err) => {
+                            console.error('Failed to copy URL: ', err);
+                            alert('Failed to copy URL. Please manually copy the URL from the address bar.');
+                          });
+                      });
+                    </script>
+                    <script>
+                      // Add an event listener to the "Print" button
+                      document.getElementById('printButton').addEventListener('click', function(event) {
+                        event.preventDefault(); // Prevent the default link behavior
+                        window.print(); // Trigger the browser's print functionality
+                      });
+                    </script>
+                  </div>
+                  <div class="tab-content tab-content-basic">
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
+                      <div class="row">
+                        <div class="col-sm-12">
+                          <div class="statistics-details d-flex align-items-center justify-content-between">
+                            <div>
+                              <p class="statistics-title">Car Count</p>
+                              <h3 class="rate-percentage" id="car_count" data-metric="car">{{ car }}</h3>
+                          
+                              {% if hourly_comparison %}
+                                  {% set latest_data = hourly_comparison | selectattr("category", "equalto", "car") | list | last %}
+                                  {% if latest_data %}
+                                      <p class="{% if latest_data.difference >= 0 %}text-success{% else %}text-danger{% endif %} d-flex">
+                                          <i class="mdi {% if latest_data.difference >= 0 %}mdi-menu-up{% else %}mdi-menu-down{% endif %}"></i>
+                                          <span title="This hour difference" data-bs-toggle="tooltip">
+                                              {% if latest_data.difference > 0 %}+{% endif %}{{ latest_data.difference }}
+                                          </span>
+                                      </p>
+                                  {% else %}
+                                      <p class="text-muted">0</p>
+                                  {% endif %}
+                              {% else %}
+                                  <p class="text-muted">0</p>
+                              {% endif %}
+                          </div>
+                           
+                          <div>
+                            <p class="statistics-title">Bus Count</p>
+                            <h3 class="rate-percentage">{{ bus }}</h3>
+                            {% if hourly_comparison %}
+                                {% set latest_bus_data = hourly_comparison | selectattr("category", "equalto", "bus") | list | last %}
+                                {% if latest_bus_data %}
+                                    <p class="{% if latest_bus_data.difference >= 0 %}text-success{% else %}text-danger{% endif %} d-flex">
+                                        <i class="mdi {% if latest_bus_data.difference >= 0 %}mdi-menu-up{% else %}mdi-menu-down{% endif %}"></i>
+                                        <span title="This hour difference" data-bs-toggle="tooltip">
+                                            {% if latest_bus_data.difference > 0 %}+{% endif %}{{ latest_bus_data.difference }}
+                                        </span>
+                                    </p>
+                                {% else %}
+                                    <p class="text-muted">0</p>
+                                {% endif %}
+                            {% else %}
+                                <p class="text-muted">0</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <p class="statistics-title">Bike Count</p>
+                            <h3 class="rate-percentage">{{ bike }}</h3>
+                            {% if hourly_comparison %}
+                                {% set latest_bike_data = hourly_comparison | selectattr("category", "equalto", "bike") | list | last %}
+                                {% if latest_bike_data %}
+                                    <p class="{% if latest_bike_data.difference >= 0 %}text-success{% else %}text-danger{% endif %} d-flex">
+                                        <i class="mdi {% if latest_bike_data.difference >= 0 %}mdi-menu-up{% else %}mdi-menu-down{% endif %}"></i>
+                                        <span title="This hour difference" data-bs-toggle="tooltip">
+                                            {% if latest_bike_data.difference > 0 %}+{% endif %}{{ latest_bike_data.difference }}
+                                        </span>
+                                    </p>
+                                {% else %}
+                                    <p class="text-muted">0</p>
+                                {% endif %}
+                            {% else %}
+                                <p class="text-muted">0</p>
+                            {% endif %}
+                        </div>
+                            <div class="d-none d-md-block">
+                              <p class="statistics-title">Animals Count</p>
+                              <h3 class="rate-percentage">{{ animals }}</h3>
+                              {% if hourly_comparison %}
+                              {% set latest_bike_data = hourly_comparison | selectattr("category", "equalto", "animals") | list | last %}
+                              {% if latest_bike_data %}
+                                  <p class="{% if latest_bike_data.difference >= 0 %}text-success{% else %}text-danger{% endif %} d-flex">
+                                      <i class="mdi {% if latest_bike_data.difference >= 0 %}mdi-menu-up{% else %}mdi-menu-down{% endif %}"></i>
+                                      <span title="This hour difference" data-bs-toggle="tooltip">
+                                          {% if latest_bike_data.difference > 0 %}+{% endif %}{{ latest_bike_data.difference }}
+                                      </span>
+                                  </p>
+                              {% else %}
+                                  <p class="text-muted">0</p>
+                              {% endif %}
+                          {% else %}
+                              <p class="text-muted">0</p>
+                          {% endif %}
+                            </div>
+                            <div class="d-none d-md-block">
+                              <p class="statistics-title">Pedestrians Count</p>
+                              <h3 class="rate-percentage">{{pedestrian}}</h3>
+                              {% if hourly_comparison %}
+                                {% set latest_bike_data = hourly_comparison | selectattr("category", "equalto", "pedestrian") | list | last %}
+                                {% if latest_bike_data %}
+                                    <p class="{% if latest_bike_data.difference >= 0 %}text-success{% else %}text-danger{% endif %} d-flex">
+                                        <i class="mdi {% if latest_bike_data.difference >= 0 %}mdi-menu-up{% else %}mdi-menu-down{% endif %}"></i>
+                                        <span title="This hour difference" data-bs-toggle="tooltip">
+                                            {% if latest_bike_data.difference > 0 %}+{% endif %}{{ latest_bike_data.difference }}
+                                        </span>
+                                    </p>
+                                {% else %}
+                                    <p class="text-muted">0</p>
+                                {% endif %}
+                            {% else %}
+                                <p class="text-muted">0</p>
+                            {% endif %}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-lg-8 d-flex flex-column">
+                          <div class="row flex-grow">
+                            <div class="col-12 col-lg-4 col-lg-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="d-sm-flex justify-content-between align-items-start">
+                                    <div>
+                                      <h4 class="card-title card-title-dash">Performance Line Chart</h4>
+                                      <h5 class="card-subtitle card-subtitle-dash"></h5>
+                                    </div>
+                                    <div id="performanceLine-legend"></div>
+                                  </div>
+                                  <div class="chartjs-wrapper mt-4">
+                                    <canvas id="performanceLine" width=""></canvas>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div> 
+                        <div class="col-lg-4 d-flex flex-column">
+                          <div class="row flex-grow">
+                            <div class="col-md-6 col-lg-12 grid-margin stretch-card">
+                              <div class="card bg-primary card-rounded">
+                                <div class="card-body pb-0">
+                                  <h4 class="card-title card-title-dash text-white mb-4">Status Summary</h4>
+                                  <div class="row">
+                                    <div class="col-sm-4">
+                                      <p class="status-summary-ight-white mb-1">Closed Value</p>
+                                      <h2 class="text-info" id="live-vehicle-count">0</h2>
+                                    </div>
+                                    <div class="col-sm-8">
+                                      <div class="status-summary-chart-wrapper pb-4">
+                                        <canvas id="status-summary"></canvas>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-6 col-lg-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="row">
+                                    <div class="col-lg-6">
+                                      <div class="d-flex justify-content-between align-items-center mb-2 mb-sm-0">
+                                        <div class="circle-progress-width">
+                                          <div id="totalVisitors" class="progressbar-js-circle pr-2"></div>
+                                        </div>
+                                        <div>
+                                          <p class="text-small mb-2">Animals Per Month</p>
+                                          <h4 class="mb-0 fw-bold" id="total_animals_month">{{ total_animals_month }}</h4>
+
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                      <div class="d-flex justify-content-between align-items-center">
+                                        <div class="circle-progress-width">
+                                          <div id="visitperday" class="progressbar-js-circle pr-2"></div>
+                                        </div>
+                                        <div>
+                                          <p class="text-small mb-2">Animals Per Day</p>
+                                          <h4 class="mb-0 fw-bold">90</h4>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-lg-8 d-flex flex-column">
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="d-sm-flex justify-content-between align-items-start">
+                                    <div>
+                                      <h4 class="card-title card-title-dash">Traffic Overview</h4>
+                                      <p class="card-subtitle card-subtitle-dash"></p>
+                                    </div>
+                                  </div>
+                                  <div class="d-sm-flex align-items-center mt-1 justify-content-between">
+                                    <div class="d-sm-flex align-items-center mt-4 justify-content-between">
+                                      <h2 class="me-2 fw-bold">322144134</h2>
+                                      <h4 class="me-2">Total</h4>
+                                      <h4 class="text-success">(+1.37%)</h4>
+                                    </div>
+                                    <div class="me-3">
+                                      <div id="marketingOverview-legend"></div>
+                                    </div>
+                                  </div>
+                                  <div class="chartjs-bar-wrapper mt-3">
+                                    <canvas id="marketingOverview"></canvas>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 d-flex flex-column">
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="row">
+                                    <div class="col-lg-12">
+                                      <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h4 class="card-title card-title-dash">Type By Vehicles</h4>
+                                      </div>
+                                      <div>
+                                        <canvas class="my-auto" id="doughnutChart"></canvas>
+                                      </div>
+                                      <div id="doughnutChart-legend" class="mt-5 text-center"></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="row">
+                                    <div class="col-lg-12">
+                                      <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div>
+                                          <h4 class="card-title card-title-dash">Leave Report</h4>
+                                        </div>
+                                        <div>
+                                          <div class="dropdown">
+                                            <button class="btn btn-light dropdown-toggle toggle-dark btn-lg mb-0 me-0" type="button" id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Month Wise </button>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton3">
+                                              <h6 class="dropdown-header">week Wise</h6>
+                                              <a class="dropdown-item" href="#">Year Wise</a>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="mt-3">
+                                        <canvas id="leaveReport"></canvas>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- content-wrapper ends -->
+          <!-- partial:partials/_footer.html -->
+          <footer class="footer">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+              <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Premium <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash.</span>
+              <span class="float-none float-sm-end d-block mt-1 mt-sm-0 text-center">Copyright © 2023. All rights reserved.</span>
+            </div>
+          </footer>
+          <!-- partial -->
+        </div>
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="{{ url_for('static', filename='assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <script src="{{ url_for('static', filename='assets/vendors/chart.js/chart.umd.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/vendors/progressbar.js/progressbar.min.js') }}"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="{{ url_for('static', filename='assets/js/off-canvas.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/template.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/settings.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/hoverable-collapse.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/todolist.js') }}"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page-->
+    <script src="{{ url_for('static', filename='assets/js/jquery.cookie.js') }}" type="text/javascript"></script>
+    <script src="{{ url_for('static', filename='assets/js/dashboard.js') }}"></script>
+    <!-- End custom js for this page-->
+    <script>
+      function fetchLiveData() {
+        fetch('/live_data')  // API call to Flask
+          .then(response => response.json())
+          .then(data => {
+            console.log("Live Data (Today):", data); // Debugging
+        
+            // Loop through elements with "data-metric" and update values
+            document.querySelectorAll("[data-metric]").forEach(element => {
+              let metricName = element.getAttribute("data-metric"); // Get metric name
+              if (data.hasOwnProperty(metricName)) {
+                element.innerText = data[metricName]; // Update value dynamically
+              }
+            });
+          })
+          .catch(error => console.error("Error fetching live data:", error));
+      }
+    
+      // Call immediately on page load
+      fetchLiveData();
+    
+      // Refresh every 500ms (0.5s)
+      setInterval(fetchLiveData, 500);
+    </script>
+    
+    <script>
+      function resetAtMidnight() {
+        let now = new Date();
+        let midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+        let timeUntilMidnight = midnight - now;
+    
+        console.log("Next reset in:", timeUntilMidnight / 1000, "seconds");
+    
+        // Clear previous timeout to prevent multiple reloads
+        if (window.midnightTimeout) clearTimeout(window.midnightTimeout);
+    
+        window.midnightTimeout = setTimeout(() => {
+          location.reload();  // Force a refresh at midnight
+        }, timeUntilMidnight);
+      }
+    
+      resetAtMidnight();  // Call the function
+    </script>
+    <!--Script for animals count on a month-->
+    <script>
+      function fetchMonthlyAnimalCount() {
+        fetch('/monthly_animal_count')  
+        .then(response => response.json())
+        .then(data => {
+            console.log("Updated Monthly Animal Count:", data.total_animals_month); // Debugging
+            document.getElementById("total_animals_month").innerText = data.total_animals_month;
+        })
+        .catch(error => console.error("Error fetching monthly animal count:", error));
+    }
+    
+    // Fetch immediately on page load
+    fetchMonthlyAnimalCount();
+    
+    // Refresh every 5 seconds to get live updates
+    setInterval(fetchMonthlyAnimalCount, 5000);
+  </script>    
+  <script>
+    function fetchLiveVehicleCount() {
+        fetch('/live_total_vehicle_count')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("live-vehicle-count").innerText = data.total_vehicles;
+            })
+            .catch(error => console.error("Error fetching live vehicle count:", error));
+    }
+
+    setInterval(fetchLiveVehicleCount, 5000); // Update every 5 seconds
+    window.onload = fetchLiveVehicleCount; // Fetch immediately when the page loads
+</script>
+
+
+  </body>
+</html>

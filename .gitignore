@@ -1,0 +1,8 @@
+# Ignore a specific file
+red.mp4
+
+# Ignore entire folders
+myenv/
+.vscode/
+__pycache__/
+vendors/

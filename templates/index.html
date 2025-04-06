@@ -22,7 +22,7 @@
     <!-- inject:css -->
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/style.css') }}">
     <!-- endinject -->
-    <link rel="shortcut icon" href="{{ url_for('static', filename='assets/images/favicon.png') }}">
+    <!--<link rel="shortcut icon" href="{{ url_for('static', filename='assets/images/favicon.png') }}">-->
   </head>
   <body class="with-welcome-text">
     <div class="container-scroller">
@@ -30,33 +30,204 @@
       <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
         <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
           <div class="me-3">
-            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+            <!--<button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
               <span class="icon-menu"></span>
-            </button>
+            </button>-->
           </div>
           <div>
             <a class="navbar-brand brand-logo" href="index.html">
-              <img src="{{ url_for('static', filename='assets/images/logo.svg') }}" alt="logo" />
-            </a>
+              <h1 class="logo">
+                <span class="bold">RTOD</span><span class="accent">&DA</span>
+              </h1>
+              <style>
+                  .logo {
+                      font-family: 'Segoe UI', sans-serif;
+                      font-size: 28px;
+                      margin: 0;
+                    }
+                    
+                    .bold {
+                      font-weight: 700;
+                      color: black;
+                    }
+                    
+                    .accent {
+                      font-weight: 700;
+                      color: #2c52e0; /* StarAdmin-like blue */
+                    }
+                  </style>  
+                  </a>
             <a class="navbar-brand brand-logo-mini" href="index.html">
-              <img src="{{ url_for('static', filename='assets/images/logo-mini.svg') }}" alt="logo" />
-            </a>
+              <h1 class="logo">
+                <span class="bold">RTOD</span><span class="accent">&DA</span>
+              </h1>
+            <style>
+                .logo {
+                    font-family: 'Segoe UI', sans-serif;
+                    font-size: 28px;
+                    margin: 0;
+                  }
+                  
+                  .bold {
+                    font-weight: 700;
+                    color: black;
+                  }
+                  
+                  .accent {
+                    font-weight: 700;
+                    color: #2c52e0; /* StarAdmin-like blue */
+                  }
+                </style>  
+                </a>
           </div>
         </div>
-        <div class="navbar-menu-wrapper d-flex align-items-top">
+        <div class="navbar-menu-wrapper d-flex align-items-top justify-content-between">
+          <!-- Left side - Greeting -->
           <ul class="navbar-nav">
             <li class="nav-item fw-semibold d-none d-lg-block ms-0">
-              <h1 class="welcome-text">Good Morning, <span class="text-black fw-bold">MA College</span></h1>
+              <h1 class="welcome-text">Hi <span class="text-black fw-bold" id="greeting">Good Morning</span></h1>
               <h3 class="welcome-sub-text">Your Traffic Summary</h3>
             </li>
           </ul>
-          <ul class="navbar-nav ms-auto">
+        
+          <!-- Middle - Digital Clock -->
+          <div class="digital-clock" style="position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 8px;">
+            <!-- Blinking LIVE Indicator -->
+            <div class="live-blink" style="display: inline-flex; align-items: center; background-color: #ff0000; padding: 2px 8px; border-radius: 12px; animation: blink 1s infinite;">
+              <span style="color: white; font-size: 0.75rem; font-weight: bold; letter-spacing: 1px;">LIVE</span>
+            </div>
+            
+            <!-- Clock -->
+            <span id="live-clock" style="font-size: 1.5rem; font-weight: bold;">--:--:--</span>
+          </div>
+          <style>
+            @keyframes blink {
+              0% { opacity: 1; }
+              50% { opacity: 0.3; }
+              100% { opacity: 1; }
+            }
+            .live-blink {
+              box-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
+            }
+          </style>
+          <!-- Right side - Weather Widget -->
+          <div class="weather-widget" style="margin-right: 20px;">
+            <div class="d-flex align-items-start">
+              <div id="current-weather-icon" style="font-size: 2rem; margin-right: 10px;">☀️</div>
+              <div>
+                <div class="weather-details">
+                  <strong>Live Now:</strong>
+                  <span id="current-temp">--°C (--°F)</span> • 
+                  <span id="current-humidity">Humidity: --%</span> • 
+                  <span id="current-wind">Wind: -- km/h</span>
+                </div>
+                <!-- Calendar Button -->
+                <button id="calendar-btn" class="btn btn-sm btn-outline-secondary mt-2" style="margin-left: 10px; padding: 5px 10px;">📅 Forecast</button>
+        
+                <!-- Forecast Modal (hidden as this feature is coming soon) -->
+                <div id="forecast-modal" style="display: none;">
+                  <!-- This will be used in future versions -->
+                </div>
+        
+                <!-- Overlay (hidden as this feature is coming soon) -->
+                <div id="modal-overlay" style="display: none;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <script>
+          // Digital Clock Function
+          function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('live-clock').textContent = `${hours}:${minutes}:${seconds}`;
+          }
+        
+          // Greeting and Time
+          function updateDateTime() {
+            const now = new Date();
+            const hour = now.getHours();
+            const greetingElement = document.getElementById('greeting');
+            
+            // Update greeting
+            if (hour < 12) {
+              greetingElement.textContent = 'Good Morning';
+            } else if (hour < 18) {
+              greetingElement.textContent = 'Good Afternoon';
+            } else {
+              greetingElement.textContent = 'Good Evening';
+            }
+          }
+          
+          // Fetch Current Weather Only
+          async function fetchWeather() {
+            const apiKey = '7f19265c84272fe03c16d292b3c10ef2'; // Replace with your actual API key
+            const city = 'KOCHI'; // Set your desired city
+        
+            try {
+              const currentResponse = await fetch(
+                `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`
+              );
+              const currentData = await currentResponse.json();
+        
+              const tempC = Math.round(currentData.main.temp);
+              const tempF = Math.round((tempC * 9/5) + 32);
+              document.getElementById('current-temp').textContent = `${tempC}°C (${tempF}°F)`;
+              document.getElementById('current-humidity').textContent = `Humidity: ${currentData.main.humidity}%`;
+              document.getElementById('current-wind').textContent = `Wind: ${Math.round(currentData.wind.speed * 3.6)} km/h`;
+        
+              const iconCode = currentData.weather[0].icon;
+              document.getElementById('current-weather-icon').textContent = getWeatherIcon(iconCode);
+        
+            } catch (error) {
+              console.error('Error fetching weather:', error);
+            }
+          }
+          
+          // Weather icons mapping
+          function getWeatherIcon(iconCode) {
+            const icons = {
+              '01d': '☀️', '01n': '🌙',
+              '02d': '⛅', '02n': '⛅',
+              '03d': '☁️', '03n': '☁️',
+              '04d': '☁️', '04n': '☁️',
+              '09d': '🌧️', '09n': '🌧️',
+              '10d': '🌦️', '10n': '🌦️',
+              '11d': '⛈️', '11n': '⛈️',
+              '13d': '❄️', '13n': '❄️',
+              '50d': '🌫️', '50n': '🌫️'
+            };
+            return icons[iconCode] || '🌡️';
+          }
+        
+          // Initialize everything
+          document.addEventListener('DOMContentLoaded', function () {
+            const calendarBtn = document.getElementById('calendar-btn');
+            if (calendarBtn) {
+              calendarBtn.addEventListener('click', () => {
+                alert('Feature coming soon: View weekly weather forecast!');
+                // The modal structure remains in the HTML for future implementation
+                // but currently shows an alert as per your original version
+              });
+            }
+        
+            updateClock();
+            setInterval(updateClock, 1000); // Update clock every second
+            updateDateTime();
+            fetchWeather();
+          });
+        </script>
+          
+          <!--<ul class="navbar-nav ms-auto">
             <li class="nav-item">
               <form class="search-form" action="#">
                 <i class="icon-search"></i>
                 <input type="search" class="form-control" placeholder="Search Here" title="Search here">
               </form>
-            </li>
+            </li>-->
             <!--<li class="nav-item dropdown d-none d-lg-block user-dropdown">
               <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                 <img class="img-xs rounded-circle" src="{{ url_for('static', filename='assets/images/faces/face8.jpg') }}" alt="Profile image"> </a>
@@ -82,7 +253,7 @@
       <!-- partial -->
       <div class="container-fluid page-body-wrapper">
         <!-- partial:partials/_sidebar.html -->
-        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <!--<nav class="sidebar sidebar-offcanvas" id="sidebar">
           <ul class="nav">
             <li class="nav-item">
               <a class="nav-link" href="index.html">
@@ -102,126 +273,287 @@
                 </ul>
               </div>
             </li>
-            <!--<li class="nav-item">
+            <li class="nav-item">
               <a class="nav-link" href="{{url_for('documentation')}}">
                 <i class="menu-icon mdi mdi-file-document"></i>
                 <span class="menu-title">Documentation</span>
               </a>
-            </li>-->
+            </li>
           </ul>
-        </nav>
+        </nav>-->
         <!-- partial -->
-        <div class="main-panel">
+        <div class="main-panel"   >
+          <style>
+            .main-panel {
+              width: 100%;
+              margin-left: 0;
+            }
+          </style>
           <div class="content-wrapper">
             <div class="row">
               <div class="col-sm-12">
                 <div class="home-tab">
                   <div class="d-sm-flex align-items-center justify-content-between border-bottom">
                     <ul class="nav nav-tabs" role="tablist">
-                      <li class="nav-item">
+                      <!--<li class="nav-item">
                         <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Overview</a>
-                      </li>
+                      </li>-->
                     </ul>
                     <div>
                       <div class="btn-wrapper">
                         <a href="#" id= "shareButton" class="btn btn-otline-dark align-items-center"><i class="icon-share"></i> Share</a>
                         <a href="#" id= "printButton" class="btn btn-otline-dark"><i class="icon-printer"></i> Print</a>
                         <a href="#" class="btn btn-primary text-white me-0"><i class="icon-download"></i> Export</a>
-                        <!-- Add this modal to your HTML -->
-<div id="exportModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h3>Select Export Period</h3>
-    <form id="exportForm" action="/export" method="POST">
-      <label>
-        <input type="radio" name="period" value="daily" checked> Daily
-      </label>
-      <label>
-        <input type="radio" name="period" value="monthly"> Monthly
-      </label>
-      <label>
-        <input type="radio" name="period" value="yearly"> Yearly
-      </label>
-
-      <!-- Daily Date Picker -->
-      <div id="dailySection" class="period-section">
-        <label for="dailyDate">Select Date:</label>
-        <input type="date" id="dailyDate" name="dailyDate">
-      </div>
-
-      <!-- Monthly Date Picker -->
-      <div id="monthlySection" class="period-section" style="display: none;">
-        <label for="monthlyMonth">Select Month:</label>
-        <input type="month" id="monthlyMonth" name="monthlyMonth">
-      </div>
-
-      <!-- Yearly Date Picker -->
-      <div id="yearlySection" class="period-section" style="display: none;">
-        <label for="yearlyYear">Select Year:</label>
-        <input type="number" id="yearlyYear" name="yearlyYear" min="2000" max="2100">
-      </div>
-
-      <button type="submit" class="btn btn-primary">Export</button>
-    </form>
-  </div>
-</div>
-
-<!-- Add this script to handle the modal and period selection -->
-<script>
-  // Get the modal
-  const modal = document.getElementById('exportModal');
-
-  // Get the button that opens the modal
-  const exportButton = document.querySelector('.btn-primary.text-white.me-0');
-
-  // Get the <span> element that closes the modal
-  const closeButton = document.querySelector('.close');
-
-  // When the user clicks the button, open the modal
-  exportButton.addEventListener('click', function(event) {
-    event.preventDefault();
-    modal.style.display = 'block';
-  });
-
-  // When the user clicks on <span> (x), close the modal
-  closeButton.addEventListener('click', function() {
-    modal.style.display = 'none';
-  });
-
-  // When the user clicks anywhere outside the modal, close it
-  window.addEventListener('click', function(event) {
-    if (event.target === modal) {
-      modal.style.display = 'none';
-    }
-  });
-
-  // Show/hide period-specific inputs based on selection
-  const periodInputs = document.querySelectorAll('input[name="period"]');
-  const dailySection = document.getElementById('dailySection');
-  const monthlySection = document.getElementById('monthlySection');
-  const yearlySection = document.getElementById('yearlySection');
-
-  periodInputs.forEach(input => {
-    input.addEventListener('change', function() {
-      if (this.value === 'daily') {
-        dailySection.style.display = 'block';
-        monthlySection.style.display = 'none';
-        yearlySection.style.display = 'none';
-      } else if (this.value === 'monthly') {
-        dailySection.style.display = 'none';
-        monthlySection.style.display = 'block';
-        yearlySection.style.display = 'none';
-      } else if (this.value === 'yearly') {
-        dailySection.style.display = 'none';
-        monthlySection.style.display = 'none';
-        yearlySection.style.display = 'block';
-      }
-    });
-  });
-</script>
+                        <!-- Night Mode Toggle Button -->
+                        <button id="nightModeToggle" class="btn btn-dark ms-2">
+                          <i class="icon-moon"></i> Night Mode
+                        </button>
                         
-                      </div>
-                    </div>
+                        <style>
+                          /* Default light mode */
+                          :root {
+                            --bg-color: #ffffff;
+                            --text-color: #212529;
+                            --card-bg: #f8f9fa;
+                            --border-color: #dee2e6;
+                            --btn-outline-color: #6c757d;
+                            --btn-primary-bg: #0d6efd;
+                          }
+
+                          /* Dark mode variables */
+                          .night-mode {
+                            --bg-color: #121212;
+                            --text-color: #f8f9fa;
+                            --card-bg: #1e1e1e;
+                            --border-color: #333;
+                            --btn-outline-color: #6c757d;
+                            --btn-primary-bg: #0a58ca;
+                          }
+
+                          /* Apply variables */
+                          body {
+                            background-color: var(--bg-color);
+                            color: var(--text-color);
+                            transition: background-color 0.3s ease;
+                          }
+
+                          .card {
+                            background-color: var(--card-bg);
+                            border-color: var(--border-color);
+                          }
+
+                          .btn-otline-dark {
+                            color: var(--btn-outline-color);
+                            border-color: var(--btn-outline-color);
+                          }
+
+                          .btn-primary {
+                            background-color: var(--btn-primary-bg);
+                          }
+                        </style>
+
+                        <script>
+                          document.getElementById('nightModeToggle').addEventListener('click', function() {
+                            document.body.classList.toggle('night-mode');
+                            
+                            // Update button appearance
+                            const icon = this.querySelector('i');
+                            if (document.body.classList.contains('night-mode')) {
+                              this.innerHTML = '<i class="icon-sun"></i> Day Mode';
+                              this.classList.remove('btn-dark');
+                              this.classList.add('btn-light');
+                            } else {
+                              this.innerHTML = '<i class="icon-moon"></i> Night Mode';
+                              this.classList.remove('btn-light');
+                              this.classList.add('btn-dark');
+                            }
+                            
+                            // Save preference
+                            localStorage.setItem('nightMode', document.body.classList.contains('night-mode'));
+                          });
+
+                          // Apply saved preference on load
+                          document.addEventListener('DOMContentLoaded', function() {
+                            if (localStorage.getItem('nightMode') === 'true') {
+                              document.getElementById('nightModeToggle').click();
+                            }
+                          });
+                        </script>
+                        <!-- Add this modal to your HTML -->
+                        <div id="exportModal" class="modal">
+                          <div class="modal-content" style="border-radius: 10px; overflow: hidden;">
+                            <!-- Branded Header -->
+                            <div class="modal-header" style="background: linear-gradient(135deg, #6e8efb, #a777e3); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center;">
+                              <h3 style="margin: 0; font-weight: 600;">
+                                <i class="icon-download" style="margin-right: 10px;"></i>
+                                Export Data
+                              </h3>
+                              <button class="close" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
+                            </div>
+                            
+                            <!-- Modal Body -->
+                            <div style="padding: 20px;">
+                              <p style="color: #666; margin-bottom: 20px;">Select the date range for your export:</p>
+                              
+                              <form id="exportForm">
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                  <label for="start_date" style="display: block; margin-bottom: 5px; font-weight: 500; color: #555;">Start Date</label>
+                                  <input type="date" id="start_date" name="start_date" class="form-control" 
+                                         style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"
+                                         required>
+                                </div>
+                                
+                                <div class="form-group" style="margin-bottom: 25px;">
+                                  <label for="end_date" style="display: block; margin-bottom: 5px; font-weight: 500; color: #555;">End Date</label>
+                                  <input type="date" id="end_date" name="end_date" class="form-control" 
+                                         style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"
+                                         required>
+                                </div>
+                                
+                                <div id="error-message" style="color: #dc3545; margin-bottom: 15px; display: none;"></div>
+                                
+                                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                                  <button type="button" class="btn-cancel" 
+                                          style="padding: 10px 15px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 5px; cursor: pointer;"
+                                          onclick="document.getElementById('exportModal').style.display='none'">
+                                    Cancel
+                                  </button>
+                                  <button type="submit" class="btn-export" 
+                                          style="padding: 10px 20px; background: linear-gradient(135deg, #6e8efb, #a777e3); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 500;">
+                                    <i class="icon-download" style="margin-right: 8px;"></i>
+                                    Export Data
+                                  </button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <style>
+                          .modal {
+                            display: none;
+                            position: fixed;
+                            z-index: 1000;
+                            left: 0;
+                            top: 0;
+                            width: 100%;
+                            height: 100%;
+                            background-color: rgba(0,0,0,0.5);
+                            animation: fadeIn 0.3s;
+                          }
+                          
+                          .modal-content {
+                            background-color: #fff;
+                            margin: 10% auto;
+                            width: 100%;
+                            max-width: 450px;
+                            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                            transform: translateY(-20px);
+                            transition: transform 0.3s ease-out;
+                          }
+                          
+                          .modal-header {
+                            position: relative;
+                          }
+                          
+                          .btn-export:hover {
+                            opacity: 0.9;
+                            transform: translateY(-1px);
+                          }
+                          
+                          .btn-cancel:hover {
+                            background-color: #e9e9e9 !important;
+                          }
+                          
+                          @keyframes fadeIn {
+                            from {opacity: 0;}
+                            to {opacity: 1;}
+                          }
+                          
+                          .modal.show .modal-content {
+                            transform: translateY(0);
+                          }
+                        </style>
+                        
+                        <script>
+                          // Get the modal
+                          const modal = document.getElementById('exportModal');
+                          const exportForm = document.getElementById('exportForm');
+                          const errorMessage = document.getElementById('error-message');
+                        
+                          // Set default dates
+                          document.addEventListener('DOMContentLoaded', function() {
+                            const today = new Date().toISOString().split('T')[0];
+                            const endDateInput = document.getElementById('end_date');
+                            endDateInput.value = today;
+                            
+                            const startDate = new Date();
+                            startDate.setDate(startDate.getDate() - 7);
+                            const startDateString = startDate.toISOString().split('T')[0];
+                            document.getElementById('start_date').value = startDateString;
+                          });
+                        
+                          // Form submission handler
+                          exportForm.addEventListener('submit', async function(e) {
+                            e.preventDefault();
+                            errorMessage.style.display = 'none';
+                            
+                            const formData = new FormData(exportForm);
+                            const startDate = formData.get('start_date');
+                            const endDate = formData.get('end_date');
+                            
+                            try {
+                              const response = await fetch('/export', {
+                                method: 'POST',
+                                body: formData
+                              });
+                              
+                              if (!response.ok) {
+                                const error = await response.text();
+                                throw new Error(error);
+                              }
+                              
+                              // Handle file download
+                              const filename = response.headers.get('Content-Disposition')?.split('filename=')[1] || `traffic_data_${startDate}_to_${endDate}.csv`;
+                              const blob = await response.blob();
+                              const url = window.URL.createObjectURL(blob);
+                              const a = document.createElement('a');
+                              a.href = url;
+                              a.download = filename;
+                              document.body.appendChild(a);
+                              a.click();
+                              window.URL.revokeObjectURL(url);
+                              a.remove();
+                              
+                              // Close modal after successful download
+                              modal.style.display = 'none';
+                            } catch (error) {
+                              errorMessage.textContent = error.message;
+                              errorMessage.style.display = 'block';
+                            }
+                          });
+                        
+                          // Modal open/close functionality
+                          const exportButton = document.querySelector('.btn-primary.text-white.me-0');
+                          const closeButtons = document.querySelectorAll('.close, .btn-cancel');
+                        
+                          exportButton?.addEventListener('click', function(event) {
+                            event.preventDefault();
+                            modal.style.display = 'block';
+                          });
+                        
+                          closeButtons.forEach(button => {
+                            button.addEventListener('click', function() {
+                              modal.style.display = 'none';
+                            });
+                          });
+                        
+                          window.addEventListener('click', function(event) {
+                            if (event.target === modal) {
+                              modal.style.display = 'none';
+                            }
+                          });
+                        </script>
                     <script>
                       // Add an event listener to the "Share" button
                       document.getElementById('shareButton').addEventListener('click', function(event) {
@@ -257,7 +589,6 @@
                             <div>
                               <p class="statistics-title">Car Count</p>
                               <h3 class="rate-percentage" id="car_count" data-metric="car">{{ car }}</h3>
-                          
                               {% if hourly_comparison %}
                                   {% set latest_data = hourly_comparison | selectattr("category", "equalto", "car") | list | last %}
                                   {% if latest_data %}
@@ -265,117 +596,250 @@
                                           <i class="mdi {% if latest_data.difference >= 0 %}mdi-menu-up{% else %}mdi-menu-down{% endif %}"></i>
                                           <span title="This hour difference" data-bs-toggle="tooltip">
                                               {% if latest_data.difference > 0 %}+{% endif %}{{ latest_data.difference }}
+                                              ({{ latest_data.percentage_difference }}%)
                                           </span>
                                       </p>
                                   {% else %}
-                                      <p class="text-muted">0</p>
+                                      <p class="text-muted">0(0%)</p>
                                   {% endif %}
                               {% else %}
-                                  <p class="text-muted">0</p>
+                                  <p class="text-muted">0(0%)</p>
                               {% endif %}
                           </div>
                            
                           <div>
                             <p class="statistics-title">Bus Count</p>
-                            <h3 class="rate-percentage">{{ bus }}</h3>
+                            <h3 class="rate-percentage" id="bus_count" data-metric="bus">{{ bus }}</h3>
                             {% if hourly_comparison %}
-                                {% set latest_bus_data = hourly_comparison | selectattr("category", "equalto", "bus") | list | last %}
-                                {% if latest_bus_data %}
-                                    <p class="{% if latest_bus_data.difference >= 0 %}text-success{% else %}text-danger{% endif %} d-flex">
-                                        <i class="mdi {% if latest_bus_data.difference >= 0 %}mdi-menu-up{% else %}mdi-menu-down{% endif %}"></i>
+                                {% set latest_data = hourly_comparison | selectattr("category", "equalto", "bus") | list | last %}
+                                {% if latest_data %}
+                                    <p class="{% if latest_data.difference >= 0 %}text-success{% else %}text-danger{% endif %} d-flex">
+                                        <i class="mdi {% if latest_data.difference >= 0 %}mdi-menu-up{% else %}mdi-menu-down{% endif %}"></i>
                                         <span title="This hour difference" data-bs-toggle="tooltip">
-                                            {% if latest_bus_data.difference > 0 %}+{% endif %}{{ latest_bus_data.difference }}
+                                            {% if latest_data.difference > 0 %}+{% endif %}{{ latest_data.difference }}
+                                            ({{ latest_data.percentage_difference }}%)
                                         </span>
                                     </p>
                                 {% else %}
-                                    <p class="text-muted">0</p>
+                                    <p class="text-muted">0(0%)</p>
                                 {% endif %}
                             {% else %}
-                                <p class="text-muted">0</p>
+                                <p class="text-muted">0(0%)</p>
                             {% endif %}
                         </div>
                         
                         <div>
                             <p class="statistics-title">Bike Count</p>
-                            <h3 class="rate-percentage">{{ bike }}</h3>
+                            <h3 class="rate-percentage" id="bike_count" data-metric="bike">{{ bike }}</h3>
                             {% if hourly_comparison %}
-                                {% set latest_bike_data = hourly_comparison | selectattr("category", "equalto", "bike") | list | last %}
-                                {% if latest_bike_data %}
-                                    <p class="{% if latest_bike_data.difference >= 0 %}text-success{% else %}text-danger{% endif %} d-flex">
-                                        <i class="mdi {% if latest_bike_data.difference >= 0 %}mdi-menu-up{% else %}mdi-menu-down{% endif %}"></i>
+                                {% set latest_data = hourly_comparison | selectattr("category", "equalto", "bike") | list | last %}
+                                {% if latest_data %}
+                                    <p class="{% if latest_data.difference >= 0 %}text-success{% else %}text-danger{% endif %} d-flex">
+                                        <i class="mdi {% if latest_data.difference >= 0 %}mdi-menu-up{% else %}mdi-menu-down{% endif %}"></i>
                                         <span title="This hour difference" data-bs-toggle="tooltip">
-                                            {% if latest_bike_data.difference > 0 %}+{% endif %}{{ latest_bike_data.difference }}
+                                            {% if latest_data.difference > 0 %}+{% endif %}{{ latest_data.difference }}
+                                            ({{ latest_data.percentage_difference }}%)
                                         </span>
                                     </p>
                                 {% else %}
-                                    <p class="text-muted">0</p>
+                                    <p class="text-muted">0(0%)</p>
                                 {% endif %}
                             {% else %}
-                                <p class="text-muted">0</p>
+                                <p class="text-muted">0(0%)</p>
                             {% endif %}
                         </div>
                             <div class="d-none d-md-block">
                               <p class="statistics-title">Animals Count</p>
-                              <h3 class="rate-percentage">{{ animals }}</h3>
+                              <h3 class="rate-percentage" id="animals_count" data-metric="animals">{{ animals }}</h3>
                               {% if hourly_comparison %}
-                              {% set latest_bike_data = hourly_comparison | selectattr("category", "equalto", "animals") | list | last %}
-                              {% if latest_bike_data %}
-                                  <p class="{% if latest_bike_data.difference >= 0 %}text-success{% else %}text-danger{% endif %} d-flex">
-                                      <i class="mdi {% if latest_bike_data.difference >= 0 %}mdi-menu-up{% else %}mdi-menu-down{% endif %}"></i>
+                              {% set latest_data = hourly_comparison | selectattr("category", "equalto", "animals") | list | last %}
+                              {% if latest_data %}
+                                  <p class="{% if latest_data.difference >= 0 %}text-success{% else %}text-danger{% endif %} d-flex">
+                                      <i class="mdi {% if latest_data.difference >= 0 %}mdi-menu-up{% else %}mdi-menu-down{% endif %}"></i>
                                       <span title="This hour difference" data-bs-toggle="tooltip">
-                                          {% if latest_bike_data.difference > 0 %}+{% endif %}{{ latest_bike_data.difference }}
+                                          {% if latest_data.difference > 0 %}+{% endif %}{{ latest_data.difference }}
+                                          ({{ latest_data.percentage_difference }}%)
                                       </span>
                                   </p>
                               {% else %}
-                                  <p class="text-muted">0</p>
+                                  <p class="text-muted">0(0%)</p>
                               {% endif %}
                           {% else %}
-                              <p class="text-muted">0</p>
+                              <p class="text-muted">0(0%)</p>
                           {% endif %}
                             </div>
                             <div class="d-none d-md-block">
                               <p class="statistics-title">Pedestrians Count</p>
-                              <h3 class="rate-percentage">{{pedestrian}}</h3>
+                              <h3 class="rate-percentage" id="pedestrian_count" data-metric="pedestrian">{{pedestrian}}</h3>
                               {% if hourly_comparison %}
-                                {% set latest_bike_data = hourly_comparison | selectattr("category", "equalto", "pedestrian") | list | last %}
-                                {% if latest_bike_data %}
-                                    <p class="{% if latest_bike_data.difference >= 0 %}text-success{% else %}text-danger{% endif %} d-flex">
-                                        <i class="mdi {% if latest_bike_data.difference >= 0 %}mdi-menu-up{% else %}mdi-menu-down{% endif %}"></i>
+                                {% set latest_data = hourly_comparison | selectattr("category", "equalto", "pedestrian") | list | last %}
+                                {% if latest_data %}
+                                    <p class="{% if latest_data.difference >= 0 %}text-success{% else %}text-danger{% endif %} d-flex">
+                                        <i class="mdi {% if latest_data.difference >= 0 %}mdi-menu-up{% else %}mdi-menu-down{% endif %}"></i>
                                         <span title="This hour difference" data-bs-toggle="tooltip">
-                                            {% if latest_bike_data.difference > 0 %}+{% endif %}{{ latest_bike_data.difference }}
+                                            {% if latest_data.difference > 0 %}+{% endif %}{{ latest_data.difference }}
+                                            ({{ latest_data.percentage_difference }}%)
                                         </span>
                                     </p>
                                 {% else %}
-                                    <p class="text-muted">0</p>
+                                    <p class="text-muted">0(0%)</p>
                                 {% endif %}
                             {% else %}
-                                <p class="text-muted">0</p>
+                                <p class="text-muted">0(0%)</p>
                             {% endif %}
                             </div>
                           </div>
                         </div>
                       </div>
                       <div class="row">
-                        <div class="col-lg-8 d-flex flex-column">
-                          <div class="row flex-grow">
-                            <div class="col-12 col-lg-4 col-lg-12 grid-margin stretch-card">
-                              <div class="card card-rounded">
-                                <div class="card-body">
-                                  <div class="d-sm-flex justify-content-between align-items-start">
-                                    <div>
-                                      <h4 class="card-title card-title-dash">Performance Line Chart</h4>
-                                      <h5 class="card-subtitle card-subtitle-dash"></h5>
+                        <div class="row">
+                          <div class="col-lg-8 d-flex flex-column">
+                            <div class="row flex-grow">
+                              <div class="col-12 col-lg-4 col-lg-12 grid-margin stretch-card">
+                                <div class="card card-rounded">
+                                  <div class="card-body">
+                                    <div class="d-sm-flex justify-content-between align-items-start">
+                                      <div>
+                                        <h4 class="card-title card-title-dash">Performance Line Chart</h4>
+                                        <h5 class="card-subtitle card-subtitle-dash"></h5>
+                                      </div>
+                                      <div id="performanceLine-legend"></div>
                                     </div>
-                                    <div id="performanceLine-legend"></div>
-                                  </div>
-                                  <div class="chartjs-wrapper mt-4">
-                                    <canvas id="performanceLine" width=""></canvas>
+                                    <div class="chartjs-wrapper mt-4">
+                                      <canvas id="performanceLine" width=""></canvas>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
                           </div>
-                        </div> 
+                          <div class="col-lg-4 d-flex flex-column">
+                            <div class="row flex-grow">
+                                <div class="col-md-6 col-lg-12 grid-margin stretch-card">
+                                    <div id="animalCard" class="card bg-primary card-rounded">
+                                        <div class="card-body pb-0">
+                                            <h4 id="cardTitle" class="card-title card-title-dash text-white mb-4">
+                                                Safe Drive, Safe Journey
+                                            </h4>
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <div id="animalAlert" class="alert alert-danger d-none" role="alert">
+                                                        <strong>Warning!</strong> Animals detected on the road. Please slow down!
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-8">
+                                                    <div class="status-summary-chart-wrapper pb-4">
+                                                        <canvas id="status-summary"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-8 d-flex flex-column">
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <style>
+                                    .card-rounded {
+                                      background-color: #ffffff !important;
+                                    }
+                                  </style>
+                                  <div class="d-sm-flex justify-content-between align-items-start">
+                                    <div>
+                                      <h4 class="card-title card-title-dash">Traffic-Count-Meter</h4>
+                                      <h5 class="card-subtitle card-subtitle-dash"></h5>
+                                    </div>
+                                  </div>
+                                  <!-- Two gauge meters in a row -->
+                                  <div class="d-flex justify-content-between">
+                                    <div id="gauge_chart_1" style="width: 50%; height: 220px;"></div>
+                                    <div id="gauge_chart_2" style="width: 50%; height: 220px;"></div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- Google Charts Integration -->
+                        <!-- Google Charts Integration -->
+                        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+                        <script>
+                          google.charts.load('current', {'packages':['gauge']});
+                          google.charts.setOnLoadCallback(drawChart);
+
+                          function drawChart() {
+                              var data1 = google.visualization.arrayToDataTable([
+                                  ['Label', 'Value'],
+                                  ['Daily Count', {{ daily_total_vehicles }}] // ✅ Flask variable for daily count
+                              ]);
+
+                              var data2 = google.visualization.arrayToDataTable([
+                                  ['Label', 'Value'],
+                                  ['Hourly Count', {{ hourly_total_vehicles }}] // ✅ Flask variable for hourly count
+                              ]);
+
+                              var options1 = {
+                                width: 300, height: 220,
+                                redFrom: 40000, redTo: 50000, 
+                                yellowFrom: 25000, yellowTo: 40000, 
+                                greenFrom: 0, greenTo: 25000, 
+                                minorTicks: 5,
+                                max: 50000,
+                                majorTicks: ['0', '10K', '20K', '30K', '40K', '50K'],
+                                animation: { duration: 400, easing: 'out' },
+                                gauge: {
+                                    minorTicks: 5,
+                                    majorTicks: { fontSize: 10, bold: true }, // ✅ Set font size and bold
+                                    label: { fontSize: 8, bold: true } // ✅ Make labels bold
+                                }
+                            };
+                            
+                            var options2 = {
+                                width: 300, height: 220,
+                                redFrom: 800, redTo: 1000, 
+                                yellowFrom: 500, yellowTo: 800, 
+                                greenFrom: 0, greenTo: 500, 
+                                minorTicks: 5,
+                                max: 1000,
+                                majorTicks: ['0', '200', '400', '600', '800', '1000'],
+                                animation: { duration: 400, easing: 'out' },
+                                gauge: {
+                                    minorTicks: 5,
+                                    majorTicks: { fontSize: 10, bold: true }, // ✅ Font size and bold
+                                    label: { fontSize: 8, bold: true } // ✅ Labels bold
+                                }
+                            };
+
+                              var chart1 = new google.visualization.Gauge(document.getElementById('gauge_chart_1'));
+                              var chart2 = new google.visualization.Gauge(document.getElementById('gauge_chart_2'));
+
+                              chart1.draw(data1, options1);
+                              chart2.draw(data2, options2);
+
+                              // ✅ Fetch real-time updates from Flask API every 5 seconds
+                              setInterval(function() {
+                                  fetch('/fetch_vehicle_counts')
+                                  .then(response => response.json())
+                                  .then(data => {
+                                      data1.setValue(0, 1, data.daily_total);
+                                      data2.setValue(0, 1, data.hourly_total);
+
+                                      chart1.draw(data1, options1);
+                                      chart2.draw(data2, options2);
+                                  })
+                                  .catch(error => console.error('Error fetching vehicle counts:', error));
+                              }, 1000); // Updates every 5 seconds
+                          }
+                        </script>
+                        
+                        
+                        
                         <div class="col-lg-4 d-flex flex-column">
                           <div class="row flex-grow">
                             <div class="col-md-6 col-lg-12 grid-margin stretch-card">
@@ -406,9 +870,8 @@
                                           <div id="totalVisitors" class="progressbar-js-circle pr-2"></div>
                                         </div>
                                         <div>
-                                          <p class="text-small mb-2">Animals Per Month</p>
-                                          <h4 class="mb-0 fw-bold" id="total_animals_month">{{ total_animals_month }}</h4>
-
+                                          <p class="text-small mb-2">Animals Per Year</p>
+                                          <h4 class="mb-0 fw-bold" id="total_animals_year">{{ total_animals_year}}</h4>
                                         </div>
                                       </div>
                                     </div>
@@ -418,8 +881,8 @@
                                           <div id="visitperday" class="progressbar-js-circle pr-2"></div>
                                         </div>
                                         <div>
-                                          <p class="text-small mb-2">Animals Per Day</p>
-                                          <h4 class="mb-0 fw-bold">90</h4>
+                                          <p class="text-small mb-2">Animals/Month</p>
+                                          <h4 class="mb-0 fw-bold" id="total_animals_month">{{ total_animals_month }}</h4>
                                         </div>
                                       </div>
                                     </div>
@@ -521,8 +984,8 @@
           <!-- partial:partials/_footer.html -->
           <footer class="footer">
             <div class="d-sm-flex justify-content-center justify-content-sm-between">
-              <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Premium <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash.</span>
-              <span class="float-none float-sm-end d-block mt-1 mt-sm-0 text-center">Copyright © 2023. All rights reserved.</span>
+              <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Aakash<a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash.</span>
+              <span class="float-none float-sm-end d-block mt-1 mt-sm-0 text-center">Copyright © 2025. All rights reserved.</span>
             </div>
           </footer>
           <!-- partial -->
@@ -596,22 +1059,24 @@
     </script>
     <!--Script for animals count on a month-->
     <script>
-      function fetchMonthlyAnimalCount() {
-        fetch('/monthly_animal_count')  
-        .then(response => response.json())
-        .then(data => {
-            console.log("Updated Monthly Animal Count:", data.total_animals_month); // Debugging
-            document.getElementById("total_animals_month").innerText = data.total_animals_month;
-        })
-        .catch(error => console.error("Error fetching monthly animal count:", error));
-    }
+      function fetchAnimalCounts() {
+          fetch('/animal_counts')  // ✅ Updated endpoint
+          .then(response => response.json())
+          .then(data => {
+              console.log("Updated Animal Counts:", data); // Debugging
+              document.getElementById("total_animals_month").innerText = data.total_animals_month;
+              document.getElementById("total_animals_year").innerText = data.total_animals_year; // ✅ New field
+          })
+          .catch(error => console.error("Error fetching animal counts:", error));
+      }
     
-    // Fetch immediately on page load
-    fetchMonthlyAnimalCount();
+      // Fetch immediately on page load
+      fetchAnimalCounts();
     
-    // Refresh every 5 seconds to get live updates
-    setInterval(fetchMonthlyAnimalCount, 5000);
-  </script>    
+      // Refresh every 5 seconds to get live updates
+      setInterval(fetchAnimalCounts, 1000);  // ✅ Corrected interval to 5 seconds
+    </script>
+     
   <script>
     function fetchLiveVehicleCount() {
         fetch('/live_total_vehicle_count')
@@ -622,10 +1087,174 @@
             .catch(error => console.error("Error fetching live vehicle count:", error));
     }
 
-    setInterval(fetchLiveVehicleCount, 5000); // Update every 5 seconds
+    setInterval(fetchLiveVehicleCount, 1000); // Update every 5 seconds
     window.onload = fetchLiveVehicleCount; // Fetch immediately when the page loads
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      function updateLiveComparison() {
+          fetch("/hourly_comparison")
+              .then(response => response.json())
+              .then(data => {
+                  data.forEach(item => {
+                      let element = document.getElementById(item.category + "_count");
+  
+                      if (element) {
+                          element.textContent = item.today; // Update count
+                      }
+  
+                      let diffElement = document.getElementById(item.category + "_diff");
+                      if (diffElement) {
+                          diffElement.innerHTML = `
+                              <p class="${item.difference >= 0 ? 'text-success' : 'text-danger'} d-flex">
+                                  <i class="mdi ${item.difference >= 0 ? 'mdi-menu-up' : 'mdi-menu-down'}"></i>
+                                  <span title="This hour difference" data-bs-toggle="tooltip">
+                                      ${item.difference > 0 ? "+" : ""}${item.difference} (${item.percentage_difference}%)
+                                  </span>
+                              </p>
+                          `;
+                      }
+                  });
+              })
+              .catch(error => console.error("Error fetching data:", error));
+      }
+  
+      // Call function every 10 seconds to fetch new data
+      setInterval(updateLiveComparison, 1000);
+  });
+  </script>
+  <script>
+    let alertTimer = null;
 
+    async function checkAnimalDetection() {
+        try {
+            const response = await fetch('/live_animal_count');
+            const data = await response.json();
 
-  </body>
+            console.log("Live Animal Count:", data);
+
+            const card = document.getElementById("animalCard");
+            const alertBox = document.getElementById("animalAlert");
+            const cardTitle = document.getElementById("cardTitle");
+
+            if (data.current_animal_count > 0) {
+                // Show alert immediately for any animal detection
+                alertBox.classList.remove("d-none");
+                card.classList.remove("bg-primary");
+                card.classList.add("bg-danger");
+                cardTitle.textContent = "Animals Found! Please Slow Down";
+
+                // Clear any existing timer
+                if (alertTimer) clearTimeout(alertTimer);
+
+                // Set fixed 2.5 second alert duration regardless of count
+                alertTimer = setTimeout(() => {
+                    card.classList.remove("bg-danger");
+                    card.classList.add("bg-primary");
+                    alertBox.classList.add("d-none");
+                    cardTitle.textContent = "Safe Drive, Safe Journey";
+                }, 2500); // Fixed 2.5 second duration
+            } else if (!alertTimer) {
+                // Reset to default if no animals detected
+                card.classList.remove("bg-danger");
+                card.classList.add("bg-primary");
+                alertBox.classList.add("d-none");
+                cardTitle.textContent = "Safe Drive, Safe Journey";
+            }
+        } catch (error) {
+            console.error("Error fetching live animal count:", error);
+        }
+    }
+
+    // Poll the API every second for real-time updates
+    setInterval(checkAnimalDetection, 1000);
+</script>
+
+<!--<script>
+  $(function() {
+      if ($("#performanceLine").length) { 
+          const ctx = document.getElementById('performanceLine');
+          var graphGradient = ctx.getContext('2d');
+          var saleGradientBg = graphGradient.createLinearGradient(5, 0, 5, 100);
+          saleGradientBg.addColorStop(0, 'rgba(26, 115, 232, 0.18)');
+          saleGradientBg.addColorStop(1, 'rgba(26, 115, 232, 0.02)');
+          
+          var saleGradientBg2 = graphGradient.createLinearGradient(100, 0, 50, 150);
+          saleGradientBg2.addColorStop(0, 'rgba(0, 208, 255, 0.19)');
+          saleGradientBg2.addColorStop(1, 'rgba(0, 208, 255, 0.03)');
+
+          fetch('http://127.0.0.1:5000/get-this-weekly-data')
+              .then(response => response.json())
+              .then(weeklyData => {
+                  new Chart(ctx, {
+                      type: 'line',
+                      data: {
+                          labels: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"],
+                          datasets: [{
+                              label: 'This week',
+                              data: weeklyData,
+                              backgroundColor: saleGradientBg,
+                              borderColor: ['#1F3BB3'],
+                              borderWidth: 1.5,
+                              fill: true,
+                              pointBorderWidth: 1,
+                              pointRadius: Array(7).fill(4),
+                              pointHoverRadius: Array(7).fill(2),
+                              pointBackgroundColor: Array(7).fill('#1F3BB3'),
+                              pointBorderColor: Array(7).fill('#fff'),
+                          }, {
+                              label: 'Last week',
+                              data: weeklyData.lastWeek || [30, 150, 190, 250, 120, 150, 130],
+                              backgroundColor: saleGradientBg2,
+                              borderColor: ['#52CDFF'],
+                              borderWidth: 1.5,
+                              fill: true,
+                              pointBorderWidth: 1,
+                              pointRadius: Array(7).fill(4),
+                              pointHoverRadius: Array(7).fill(2),
+                              pointBackgroundColor: Array(7).fill('#52CDFF'),
+                              pointBorderColor: Array(7).fill('#fff'),
+                          }]
+                      },
+                      options: {
+                          responsive: true,
+                          maintainAspectRatio: false,
+                          elements: {
+                              line: { tension: 0.4 }
+                          },
+                          scales: {
+                              y: {
+                                  grid: { display: true, color: "#F0F0F0", drawBorder: false },
+                                  ticks: { autoSkip: true, maxTicksLimit: 4, color: "#6B778C", font: { size: 10 } }
+                              },
+                              x: {
+                                  grid: { display: false, drawBorder: false },
+                                  ticks: { autoSkip: true, maxTicksLimit: 7, color: "#6B778C", font: { size: 10 } }
+                              }
+                          },
+                          plugins: {
+                              legend: { display: false }
+                          }
+                      },
+                      plugins: [{
+                          afterDatasetUpdate: function(chart, args, options) {
+                              const chartId = chart.canvas.id;
+                              const legendId = `${chartId}-legend`;
+                              const legendElement = document.getElementById(legendId);
+                              if (legendElement) {
+                                  const ul = document.createElement('ul');
+                                  chart.data.datasets.forEach(dataset => {
+                                      ul.innerHTML += `<li><span style="background-color: ${dataset.borderColor}"></span>${dataset.label}</li>`;
+                                  });
+                                  legendElement.appendChild(ul);
+                              }
+                          }
+                      }]
+                  });
+              })
+              .catch(error => console.error('Error fetching data:', error));
+      }
+  });
+</script>-->
+</body>
 </html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 90%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        h1 {
+            margin: 0;
+        }
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+        .card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            padding: 20px;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .status-pending {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        .status-approved {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .status-rejected {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .action-btn {
+            padding: 6px 12px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .approve-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .approve-btn:hover {
+            background-color: #45a049;
+        }
+        .reject-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        .reject-btn:hover {
+            background-color: #d32f2f;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 5px;
+            width: 400px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: black;
+        }
+        .modal-footer {
+            margin-top: 15px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+        <button class="logout-btn" onclick="window.location.href='login.html'">Logout</button>
+    </header>
+    
+    <div class="container">
+        <div class="card">
+            <h2>User Approval Requests</h2>
+            <table id="requestTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Sample data - would be populated from database -->
+                    <tr>
+                        <td>1</td>
+                        <td>John Smith</td>
+                        <td>john.smith@example.com</td>
+                        <td>Police Officer</td>
+                        <td><span class="status-pending">Pending</span></td>
+                        <td>
+                            <button class="action-btn approve-btn" data-id="1">Approve</button>
+                            <button class="action-btn reject-btn" data-id="1">Reject</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Jane Doe</td>
+                        <td>jane.doe@example.com</td>
+                        <td>RTO</td>
+                        <td><span class="status-pending">Pending</span></td>
+                        <td>
+                            <button class="action-btn approve-btn" data-id="2">Approve</button>
+                            <button class="action-btn reject-btn" data-id="2">Reject</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Mike Johnson</td>
+                        <td>mike.johnson@example.com</td>
+                        <td>Government Official</td>
+                        <td><span class="status-approved">Approved</span></td>
+                        <td>
+                            <button class="action-btn approve-btn" data-id="3" disabled>Approve</button>
+                            <button class="action-btn reject-btn" data-id="3" disabled>Reject</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="modalTitle">Confirm Action</h3>
+            <p id="modalMessage">Are you sure you want to perform this action?</p>
+            <div class="modal-footer">
+                <button id="cancelBtn" class="action-btn">Cancel</button>
+                <button id="confirmBtn" class="action-btn approve-btn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get modal elements
+        const modal = document.getElementById('confirmationModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const closeBtn = document.querySelector('.close');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const confirmBtn = document.getElementById('confirmBtn');
+        
+        // Variables to store current action information
+        let currentAction = '';
+        let currentUserId = '';
+        
+        // Add event listeners to all approve buttons
+        document.querySelectorAll('.approve-btn:not([disabled])').forEach(btn => {
+            btn.addEventListener('click', function() {
+                currentAction = 'approve';
+                currentUserId = this.getAttribute('data-id');
+                modalTitle.textContent = 'Confirm Approval';
+                modalMessage.textContent = 'Are you sure you want to approve this user?';
+                confirmBtn.className = 'action-btn approve-btn';
+                modal.style.display = 'block';
+            });
+        });
+        
+        // Add event listeners to all reject buttons
+        document.querySelectorAll('.reject-btn:not([disabled])').forEach(btn => {
+            btn.addEventListener('click', function() {
+                currentAction = 'reject';
+                currentUserId = this.getAttribute('data-id');
+                modalTitle.textContent = 'Confirm Rejection';
+                modalMessage.textContent = 'Are you sure you want to reject this user?';
+                confirmBtn.className = 'action-btn reject-btn';
+                modal.style.display = 'block';
+            });
+        });
+        
+        // Close modal when clicking the X
+        closeBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        // Close modal when clicking Cancel
+        cancelBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        // Handle confirm button click
+        confirmBtn.addEventListener('click', function() {
+            // In a real application, we would send an AJAX request to update the user status
+            // For demo purposes, we'll update the UI directly
+            const row = document.querySelector(`button[data-id="${currentUserId}"]`).closest('tr');
+            const statusCell = row.querySelector('td:nth-child(5)');
+            const actionCell = row.querySelector('td:nth-child(6)');
+            
+            if (currentAction === 'approve') {
+                statusCell.innerHTML = '<span class="status-approved">Approved</span>';
+            } else {
+                statusCell.innerHTML = '<span class="status-rejected">Rejected</span>';
+            }
+            
+            // Disable action buttons
+            actionCell.querySelector('.approve-btn').disabled = true;
+            actionCell.querySelector('.reject-btn').disabled = true;
+            
+            // Close modal
+            modal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

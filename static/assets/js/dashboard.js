@@ -359,63 +359,94 @@
       bar.text.style.fontSize = '0rem';
       bar.animate(.34); // Number from 0.0 to 1.0
     }
-
-    if ($("#doughnutChart").length) { 
-      const doughnutChartCanvas = document.getElementById('doughnutChart');
-      new Chart(doughnutChartCanvas, {
-        type: 'doughnut',
-        data: {
-          labels: ['Total','Net','Gross','AVG'],
-          datasets: [{
-            data: [40, 20, 30, 10],
-            backgroundColor: [
-              "#1F3BB3",
-              "#FDD0C7",
-              "#52CDFF",
-              "#81DADA"
-            ],
-            borderColor: [
-              "#1F3BB3",
-              "#FDD0C7",
-              "#52CDFF",
-              "#81DADA"
-            ],
-          }]
-        },
-        options: {
-          cutout: 90,
-          animationEasing: "easeOutBounce",
-          animateRotate: true,
-          animateScale: false,
-          responsive: true,
-          maintainAspectRatio: true,
-          showScale: true,
-          legend: false,
-          plugins: {
-            legend: {
-                display: false,
+    if ($("#doughnutChart").length) {
+      const doughnutChartCanvas = document.getElementById("doughnutChart");
+      let doughnutChart; // Store chart instance
+    
+      function fetchAndUpdateChart() {
+        fetch("/total_counts_today")
+          .then(response => response.json())
+          .then(data => {
+            const labels = ["Car", "Bike", "Bus", "Pedestrian", "Truck", "Animals"];
+            const values = [
+              data.car || 0,
+              data.bike || 0,
+              data.bus || 0,
+              data.pedestrian || 0,
+              data.truck || 0,
+              data.animals || 0
+            ];
+    
+            if (!doughnutChart) {
+              // Create the chart if it doesn't exist
+              doughnutChart = new Chart(doughnutChartCanvas, {
+                type: "doughnut",
+                data: {
+                  labels: labels,
+                  datasets: [{
+                    data: values,
+                    backgroundColor: [
+                      "#1F3BB3", "#FDD0C7", "#52CDFF",
+                      "#81DADA", "#FF5733", "#33FF57"
+                    ],
+                    borderColor: [
+                      "#1F3BB3", "#FDD0C7", "#52CDFF",
+                      "#81DADA", "#FF5733", "#33FF57"
+                    ],
+                  }]
+                },
+                options: {
+                  cutout: "40%", // Adjust for center fill
+                  responsive: true,
+                  maintainAspectRatio: true,
+                  animation: {
+                    animateRotate: true,
+                    animateScale: false,
+                  },
+                  plugins: {
+                    legend: { display: false }
+                  }
+                },
+                plugins: [{
+                  afterDatasetUpdate: function (chart, args, options) {
+                    const chartId = chart.canvas.id;
+                    const legendId = `${chartId}-legend`;
+                    const ul = document.createElement('ul');
+    
+                    for (let i = 0; i < chart.data.datasets[0].data.length; i++) {
+                      ul.innerHTML += `
+                        <li>
+                          <span style="background-color: ${chart.data.datasets[0].backgroundColor[i]}"></span>
+                          ${chart.data.labels[i]}
+                        </li>
+                      `;
+                    }
+    
+                    const legendElement = document.getElementById(legendId);
+                    if (legendElement) {
+                      legendElement.innerHTML = ""; // Clear previous legend
+                      legendElement.appendChild(ul);
+                    }
+                  }
+                }]
+              });
+            } else {
+              // Update chart data dynamically
+              doughnutChart.data.datasets[0].data = values;
+              doughnutChart.update();
             }
-          }
-        },
-        plugins: [{
-          afterDatasetUpdate: function (chart, args, options) {
-              const chartId = chart.canvas.id;
-              var i;
-              const legendId = `${chartId}-legend`;
-              const ul = document.createElement('ul');
-              for(i=0;i<chart.data.datasets[0].data.length; i++) {
-                  ul.innerHTML += `
-                  <li>
-                    <span style="background-color: ${chart.data.datasets[0].backgroundColor[i]}"></span>
-                    ${chart.data.labels[i]}
-                  </li>
-                `;
-              }
-              return document.getElementById(legendId).appendChild(ul);
-            }
-        }]
-      });
+          })
+          .catch(error => console.error("Error fetching data:", error));
+      }
+    
+      // Initial chart load
+      fetchAndUpdateChart();
+    
+      // Update the chart every 5 seconds (adjust as needed)
+      setInterval(fetchAndUpdateChart, 1000);
     }
+    
+    
 
     if ($("#leaveReport").length) { 
       const leaveReportCanvas = document.getElementById('leaveReport');

@@ -1,11 +1,15 @@
-from flask import Flask, render_template, request, jsonify, make_response
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash
 import pymysql
 from datetime import datetime
 from collections import OrderedDict
-from io import StringIO
-import csv
-from datetime import timedelta 
 app = Flask(__name__)
+app.secret_key = "trafficsecretkey123"  # Required for session management
+
+# Dummy user data for authentication
+DUMMY_USERS = {
+    "admin": "password123",
+    "user": "user123"
+}
 
 def get_db_connection():
     """Establish a connection to the MySQL database."""
@@ -177,6 +181,7 @@ def get_animal_counts():
         return {"monthly_count": 0, "yearly_count": 0}
     finally:
         connection.close()
+        
 def get_current_animal_count():
     """Retrieve the count of animals detected at the current time."""
     connection = get_db_connection()
@@ -259,136 +264,83 @@ def get_weekly_vehicle_counts():
         return None
     finally:
         connection.close()
-@app.route('/export', methods=['POST'])
-def export_data():
-    start_date = request.form.get('start_date')
-    end_date = request.form.get('end_date')
-    
-    # Validate dates
-    try:
-        start_dt = datetime.strptime(start_date, '%Y-%m-%d')
-        end_dt = datetime.strptime(end_date, '%Y-%m-%d')
-        if start_dt > end_dt:
-            return "End date must be after start date", 400
-    except ValueError:
-        return "Invalid date format. Please use YYYY-MM-DD", 400
-    
-    # Get database connection
-    connection = get_db_connection()
-    if not connection:
-        return "Database connection failed", 500
 
-    try:
-        with connection.cursor() as cursor:
-            # Query for raw data
-            sql = """
-                SELECT * FROM traffic
-                WHERE `current_date` BETWEEN %s AND %s
-                ORDER BY `current_date`, `current_time`
-            """
-            cursor.execute(sql, (start_date, end_date))
-            results = cursor.fetchall()
-            
-            if not results:
-                return "No data found for selected date range", 404
-            
-            # Generate CSV
-            def generate_csv():
-                data = StringIO()
-                writer = csv.writer(data)
-                
-                # Write header
-                if results:
-                    writer.writerow(results[0].keys())
-                    
-                # Write data rows
-                for row in results:
-                    writer.writerow(row.values())
-                    yield data.getvalue()
-                    data.seek(0)
-                    data.truncate(0)
-            
-            # Create response
-            response = make_response(generate_csv())
-            filename = f"traffic_data_{start_date}_to_{end_date}.csv"
-            response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
-            response.headers['Content-type'] = 'text/csv'
-            return response
-            
-    except pymysql.MySQLError as e:
-        return f"Database error: {e}", 500
-    finally:
-        connection.close()
+# ---------- AUTHENTICATION AND SESSION MANAGEMENT ----------
 
-# def this_week_data():
-#     days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
-    
-#     today = datetime.today()
-#     weekday_index = today.weekday()
-#     start_of_week = today - timedelta(days=weekday_index + 1)  # Start from last Sunday
+# Login required decorator
+def login_required(f):
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in session:
+            flash('Please log in to access this page', 'warning')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
-#     # Ensure database connection
-#     conn = get_db_connection()  # Assuming this function is defined elsewhere
-#     cursor = conn.cursor()
+# ---------- FLASK ROUTES ----------
 
-#     query = """
-#         SELECT DAYNAME(`current_date`), 
-#                SUM(car + bike + bus + truck) AS total_vehicles
-#         FROM traffic 
-#         WHERE `current_date` BETWEEN %s AND %s 
-#         GROUP BY DAYNAME(`current_date`)
-#     """
-    
-#     cursor.execute(query, (start_of_week.strftime('%Y-%m-%d'), today.strftime('%Y-%m-%d')))
-    
-#     db_results = {day: 0 for day in days}  # Initialize all days with zero
-    
-#     for day, value in cursor.fetchall():
-#         db_results[day[:3].upper()] = value  # Convert MySQL day name to short form
-    
-#     conn.close()
-    
-#     # Set future days to zero
-#     today_index = days.index(today.strftime("%a").upper())
-#     for i in range(today_index + 1, len(days)):
-#         db_results[days[i]] = 0
-    
-#     return [db_results[day] for day in days]
+@app.route('/')
+def home():
+    """Display the home page with login button"""
+    return render_template('home.html')
 
-# def last_week_data():
-#     days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Handle user login"""
+    error = None
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        # Check if username exists and password is correct
+        if username in DUMMY_USERS and DUMMY_USERS[username] == password:
+            session['username'] = username
+            flash('Login successful!', 'success')
+            return redirect(url_for('dashboard'))
+        else:
+            error = 'Invalid credentials. Please try again.'
     
-#     today = datetime.today()
-#     weekday_index = today.weekday()
-    
-#     # Get the start and end of last week
-#     last_sunday = today - timedelta(days=weekday_index + 8)  # Last week's Sunday
-#     last_saturday = today - timedelta(days=weekday_index + 2)  # Last week's Saturday
+    return render_template('login.html', error=error)
 
-#     # Ensure database connection
-#     conn = get_db_connection()  # Assuming this function is defined elsewhere
-#     cursor = conn.cursor()
+@app.route('/logout')
+def logout():
+    """Handle user logout"""
+    session.pop('username', None)
+    flash('You have been logged out', 'info')
+    return redirect(url_for('home'))
 
-#     query = """
-#         SELECT DAYNAME(`current_date`), 
-#                SUM(car + bike + bus + truck) AS total_vehicles
-#         FROM traffic 
-#         WHERE `current_date` BETWEEN %s AND %s 
-#         GROUP BY DAYNAME(`current_date`)
-#     """
-    
-#     cursor.execute(query, (last_sunday.strftime('%Y-%m-%d'), last_saturday.strftime('%Y-%m-%d')))
-    
-#     db_results = {day: 0 for day in days}  # Initialize all days with zero
-    
-#     for day, value in cursor.fetchall():
-#         db_results[day[:3].upper()] = value  # Convert MySQL day name to short form
-    
-#     conn.close()
-    
-#     return [db_results[day] for day in days]
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    """Render the main dashboard page with traffic data."""
+    columns = ["car", "bike", "bus", "pedestrian", "truck", "animals"]
+    totals = {col: get_total_count(col, datetime.today().date()) for col in columns}
+    hourly_comparison = get_comparison()
+    animal_counts = get_animal_counts()
+    total_animals_month = animal_counts.get("monthly_count", 0)
+    total_animals_year = animal_counts.get("yearly_count", 0)
+    live_animal_count = get_current_animal_count().get("current_animal_count", 0)
+    vehicle_counts = get_vehicle_counts()
+    daily_total_vehicles = vehicle_counts["daily_total"]
+    hourly_total_vehicles = vehicle_counts["hourly_total"]
+
+    return render_template(
+        "index.html",
+        **totals,
+        hourly_comparison=hourly_comparison,
+        total_animals_month=total_animals_month,
+        total_animals_year=total_animals_year,
+        live_animal_count=live_animal_count,
+        daily_total_vehicles=daily_total_vehicles,
+        hourly_total_vehicles=hourly_total_vehicles,
+        username=session.get('username', '')
+    )
+
+# ---------- API ROUTES ----------
 
 @app.route('/live_total_vehicle_count', methods=['GET'])
+@login_required
 def live_total_vehicle_count():
     """API to return the total vehicle count till the current minute."""
     connection = get_db_connection()
@@ -397,7 +349,6 @@ def live_total_vehicle_count():
 
     try:
         with connection.cursor() as cursor:
-
             sql = """
                 SELECT COALESCE(SUM(car + bus + bike + truck + pedestrian + animals), 0) AS total_vehicles
                 FROM traffic
@@ -416,90 +367,50 @@ def live_total_vehicle_count():
     finally:
         connection.close()
 
-# ------------------ FLASK ROUTES ------------------
- # Home page with login button
-@app.route('/') 
-def index():
-    """Render the main dashboard page with weekly and hourly traffic data."""
-    columns = ["car", "bike", "bus", "pedestrian", "truck", "animals"]
-    totals = {col: get_total_count(col, datetime.today().date()) for col in columns}
-    #data_this_week = this_week_data()
-    #data_last_week = last_week_data()  # Fetch last week's data
-    hourly_comparison = get_comparison()
-    animal_counts = get_animal_counts()
-    total_animals_month = animal_counts.get("monthly_count", 0)
-    total_animals_year = animal_counts.get("yearly_count", 0)
-    live_animal_count = get_current_animal_count().get("current_animal_count", 0)
-    vehicle_counts = get_vehicle_counts()
-    daily_total_vehicles = vehicle_counts["daily_total"]
-    hourly_total_vehicles = vehicle_counts["hourly_total"]
-
-    return render_template(
-        "index.html",
-        **totals,
-        #weekly_data=data_this_week,
-        #last_week_data=data_last_week,  # Add last week's data to template
-        hourly_comparison=hourly_comparison,
-        total_animals_month=total_animals_month,
-        total_animals_year=total_animals_year,
-        live_animal_count=live_animal_count,
-        daily_total_vehicles=daily_total_vehicles,
-        hourly_total_vehicles=hourly_total_vehicles
-    )
-
-
-        
-# @app.route('/get-this-weekly-data')
-# def get_weekly_data():
-#     return jsonify({
-#         "thisWeek": this_week_data(),
-#         "lastWeek": last_week_data()
-#     })
-
 @app.route('/fetch_vehicle_counts', methods=['GET'])
+@login_required
 def fetch_vehicle_counts():
     try:
         vehicle_count = get_vehicle_counts()
-
-        # ✅ Ensure JSON response
         return jsonify(vehicle_count), 200
-
     except Exception as e:
-        print(f"Error in /fetch_vehicle_counts: {e}")  # Debugging
-        return jsonify({"error": str(e)}), 500  # Return error message as JSON
-
+        print(f"Error in /fetch_vehicle_counts: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/weekly_vehicle_counts', methods=['GET'])
+@login_required
 def weekly_vehicle_counts():
     data = get_weekly_vehicle_counts()
     if data:
         return jsonify(data)
     return jsonify({"error": "Database error occurred."}), 500
+
 @app.route('/live_animal_count', methods=['GET'])
+@login_required
 def live_animal_count():
     """API to fetch live animal count."""
     return jsonify(get_current_animal_count())
+
 @app.route('/live_data', methods=['GET'])
+@login_required
 def live_data():
     """API to return the latest traffic counts dynamically."""
     columns = ["car", "bike", "bus", "pedestrian", "truck", "animals"]
     totals = {col: get_total_count(col, datetime.today().date()) for col in columns}
-    
-    print("Live Data Response:", totals)
-
     return jsonify(totals)
 
 @app.route('/animal_counts', methods=['GET'])
+@login_required
 def animal_counts():
     """API to get the total number of animals detected in the current month and year."""
-    counts = get_animal_counts()  # Call the updated function
+    counts = get_animal_counts()
     return jsonify({
         "total_animals_month": counts["monthly_count"],
         "total_animals_year": counts["yearly_count"]
     })
 
-
 @app.route('/hourly_comparison', methods=['GET'])
+@login_required
 def hourly_comparison():
     """API endpoint to get today's cumulative data compared to yesterday's total."""
     data = get_comparison()
@@ -508,6 +419,7 @@ def hourly_comparison():
     return jsonify({"error": "Database error occurred."}), 500
 
 @app.route('/total_counts_today', methods=['GET'])
+@login_required
 def total_counts_today():
     """API endpoint to get today's total vehicle counts for each category."""
     columns = ["car", "bike", "bus", "pedestrian", "truck", "animals"]
@@ -520,6 +432,7 @@ def total_counts_today():
     return jsonify(totals)
 
 @app.route('/total_count', methods=['GET'])
+@login_required
 def total_count():
     """API endpoint to get the total count of a specific type of vehicle."""
     column = request.args.get('type')
@@ -532,11 +445,13 @@ def total_count():
     return jsonify({column: total})
 
 @app.route('/documentation')
+@login_required
 def documentation():
     """Render the API documentation page."""
     return render_template("docs/documentation.html")
 
 @app.route('/chartjs')
+@login_required
 def chartjs():
     """Render the Chart.js visualization page."""
     return render_template("pages/charts/chartjs.html")

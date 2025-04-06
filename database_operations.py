@@ -1,6 +1,6 @@
 import pymysql
 
-def insert_data(car, bus, bike, truck, pedestrian, animals, current_date, current_time):
+def insert_data(car, bus, bike, truck, pedestrian, animals):
     try:
         print("Connecting to database...")
         connection = pymysql.connect(
@@ -14,9 +14,9 @@ def insert_data(car, bus, bike, truck, pedestrian, animals, current_date, curren
         with connection.cursor() as cursor:
             sql = """
                 INSERT INTO traffic (`car`, `bus`, `bike`, `truck`, `pedestrian`, `animals`, `current_date`, `current_time`) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, CURDATE(), CURTIME())
             """
-            values = (car, bus, bike, truck, pedestrian, animals, current_date, current_time)
+            values = (car, bus, bike, truck, pedestrian, animals)
             print("Executing query...")
             cursor.execute(sql, values)
             print("Query executed!")
@@ -31,5 +31,5 @@ def insert_data(car, bus, bike, truck, pedestrian, animals, current_date, curren
         connection.close()
         print("Connection closed.")
 
-# Example usage:
-insert_data(6, 2, 10, 3, 4, 1, '2025-03-21', '05:30:00')
+# Example usage (No need to pass date and time now)
+insert_data(6, 2, 10, 3, 4,1)

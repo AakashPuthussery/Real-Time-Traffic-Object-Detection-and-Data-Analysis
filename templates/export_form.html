@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Export Traffic Data</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        form { display: grid; gap: 15px; }
+        label { display: grid; gap: 5px; }
+        button { padding: 10px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Export Traffic Data</h1>
+    <form method="POST">
+        <label>
+            Start Date:
+            <input type="date" name="start_date" required>
+        </label>
+        
+        <label>
+            End Date:
+            <input type="date" name="end_date" required>
+        </label>
+        
+        <label>
+            Export Format:
+            <select name="format" required>
+                <option value="csv">CSV</option>
+                <option value="excel">Excel</option>
+            </select>
+        </label>
+        
+        <button type="submit">Export Data</button>
+    </form>
+</body>
+</html>

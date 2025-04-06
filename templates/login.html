@@ -77,6 +77,107 @@
   </style>
 </head>
 <body>
+  <a href="home.html" class="back-button">← Back to Home</a>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #3498db, #8e44ad);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+  
+    .login-container {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      width: 350px;
+    }
+  
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+  
+    .form-group {
+      margin-bottom: 15px;
+    }
+  
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+  
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+  
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      width: 100%;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+  
+    button:hover {
+      background-color: #45a049;
+    }
+  
+    .links {
+      text-align: center;
+      margin-top: 15px;
+    }
+  
+    .links a {
+      color: #2196F3;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+  
+    .links a:hover {
+      text-decoration: underline;
+    }
+  
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+    }
+  
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: red;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+    
+    .back-button:hover {
+      background-color: darkred;
+    }
+    
+  </style>
   <div class="login-container">
     <h2>Login</h2>
     <form id="login-form" onsubmit="return validateLogin()">
@@ -138,10 +239,8 @@
           
           // Redirect based on role
           if (user.role === 'Admin') {
-            window.location.href = 'admin.html';
-          } else {
-            window.location.href = 'http://127.0.0.1:5000/';
-          }
+            window.location.href = 'admin_main.html';
+          } 
         } else {
           alert('Invalid username or password!');
         }

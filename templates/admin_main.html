@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f7fa;
+            background: linear-gradient(135deg, #3498db, #8e44ad);
             margin: 0;
             padding: 0;
             display: flex;
@@ -89,10 +89,37 @@
             color: #7f8c8d;
             font-size: 0.875rem;
         }
+        .back-button,
+        .logout-button {
+            position: absolute;
+            top: 1rem;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .back-button:hover,
+        .logout-button:hover {
+            background-color: #c0392b;
+        }
+        .back-button {
+            left: 1rem;
+        }
+        .logout-button {
+            right: 1rem;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <button class="back-button" onclick="window.location.href='login.html'">← Back</button>
+        <button class="logout-button" onclick="window.location.href='login.html'">Logout</button>
+
         <h1>Admin Control Panel</h1>
         
         <div class="button-container">

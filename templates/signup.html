@@ -74,6 +74,61 @@
             outline: none;
         }
         
+        .file-input-container {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input-button {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 12px;
+            display: block;
+            text-align: center;
+            background-color: #f9f9f9;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .file-input-button:hover {
+            background-color: #eee;
+        }
+        
+        .file-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-name {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #555;
+            display: none;
+        }
+        
+        .verification-note {
+            font-size: 14px;
+            color: #777;
+            margin-top: 8px;
+            font-style: italic;
+        }
+        
+        .required-field {
+            display: none;
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
         .btn {
             display: block;
             width: 100%;
@@ -152,6 +207,26 @@
     </style>
 </head>
 <body>
+    <a href="login.html" class="back-button">← Back</a>
+    <style>
+    .back-button {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background-color: red;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.3s;
+    }
+    
+    .back-button:hover {
+        background-color: darkred;
+    }
+    </style>    
+
     <div class="signup-container">
         <div class="logo">
             <a href="home.html">DashPro</a>
@@ -177,6 +252,18 @@
                     <option value="other">Other</option>
                 </select>
             </div>
+            <div class="form-group" id="idCardGroup">
+                <label for="idCard">ID Card:</label>
+                <div class="file-input-container">
+                    <div class="file-input-button">
+                        <span>Choose File</span>
+                    </div>
+                    <input type="file" id="idCard" name="idCard" class="file-input" accept="image/*, application/pdf">
+                </div>
+                <div class="file-name" id="fileName">No file chosen</div>
+                <div class="verification-note">Upload a scan/photo of your official ID card for verification.</div>
+                <div class="required-field" id="idCardRequired">ID card is required for this role.</div>
+            </div>
             <div class="form-group">
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
@@ -200,6 +287,28 @@
     </div>
 
     <script>
+        // Handle file input display
+        document.getElementById('idCard').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+            const fileNameElement = document.getElementById('fileName');
+            fileNameElement.textContent = fileName;
+            fileNameElement.style.display = 'block';
+        });
+        
+        // Handle role change to show ID requirements
+        document.getElementById('role').addEventListener('change', function(e) {
+            const role = e.target.value;
+            const idCardRequired = document.getElementById('idCardRequired');
+            
+            if (role === 'police' || role === 'rto' || role === 'government') {
+                idCardRequired.style.display = 'block';
+                document.getElementById('idCard').setAttribute('required', 'required');
+            } else {
+                idCardRequired.style.display = 'none';
+                document.getElementById('idCard').removeAttribute('required');
+            }
+        });
+
         document.getElementById('signupForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -207,9 +316,16 @@
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             const role = document.getElementById('role').value;
+            const idCard = document.getElementById('idCard').files[0];
             
             if (password !== confirmPassword) {
                 alert('Passwords do not match!');
+                return;
+            }
+            
+            // Check if ID card is required but not uploaded
+            if ((role === 'police' || role === 'rto' || role === 'government') && !idCard) {
+                document.getElementById('idCardRequired').style.display = 'block';
                 return;
             }
             
@@ -218,7 +334,7 @@
             const modalMessage = document.getElementById('modalMessage');
             
             if (role === 'police' || role === 'rto' || role === 'government') {
-                modalMessage.textContent = 'Your account has been created and is pending approval by an administrator.';
+                modalMessage.textContent = 'Your account has been created and is pending approval by an administrator. We will verify your ID card and credentials.';
             } else {
                 modalMessage.textContent = 'Your account has been created successfully.';
             }
